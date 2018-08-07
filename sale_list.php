@@ -1,5 +1,11 @@
 <?php
 include("master.php");
+include("confs/auth.php");
+include("master/sql.php");
+session_start();
+include("confs/config.php");
+ini_set('display_errors', 1);
+$auth = isset($_SESSION['auth']);
 
 ?>
 <html>
@@ -24,10 +30,10 @@ include("master.php");
 		<div class="card-header">
 			<div class="row">
 				<div class="col-md-10">
-					<h6>User : AAA[Development]</h6>
+					<h6>User : <?php echo $user['username'] ?>[<?php  echo $user['group_name'] ?>]</h6>
 				</div>
 				<div class="col-md-2">
-					<a href="#"> (Logout)</a>
+					<a href="auth/logout.php"> (Logout)</a>
 				</div>
 			</div>
 		</div>
@@ -47,7 +53,7 @@ include("master.php");
 					(Search)</a>
 				</div>
 				<div class="col-md-2"> 
-					<a href="" class="btn btn-outline-dark" style="width:80px;height:40px;font-size:11px;">
+					<a href="./sale_product_insert.php" class="btn btn-outline-dark" style="width:80px;height:40px;font-size:11px;">
 					登録<br>
 					(Insert)</a>
 				</div>
