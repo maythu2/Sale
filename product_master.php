@@ -2,13 +2,35 @@
 include("confs/auth.php");
 include("master.php");
 include("master/sql.php");
-session_start();
+if(!isset($_SESSION)) 
+{ 
+    session_start(); 
+} 
 include("confs/config.php");
 ini_set('display_errors', 1);
 $auth = isset($_SESSION['auth']);
 
 $sql = "SELECT * FROM product_master WHERE delete_flag!='1' ";
-$product = mysql_query($sql,$conn);
+$product = mysqli_query($conn,$sql);
+
+if (isset($_GET['code'])) {
+	$code = $_GET['code'];
+	$sql = "SELECT * FROM product_master WHERE class_code LIKE '%$code%' ";
+	$product = mysqli_query($conn,$sql);
+}
+if (isset($_GET['name'])) {
+	$name = $_GET['name'];
+	$sql = "SELECT *FROM product_master WHERE item_name LIKE '%$name%' ";
+	$product = mysqli_query($conn,$sql);
+}
+if (isset($_GET['name']) && isset($_GET['code'])) {
+	$name = $_GET['name'];
+	$code = $_GET['code'];
+	$sql = "SELECT *FROM product_master WHERE item_name LIKE '%$name%' AND class_code LIKE '%$code%' ";
+	$product = mysqli_query($conn,$sql);
+ 	
+}
+
 ?>
 <html>
 <head>
@@ -45,14 +67,14 @@ $product = mysql_query($sql,$conn);
 					<label >分類 :</label>
 				</div>
 				<div class="col-md-4"> 
-					<select class="custom-select">
-						<option>-</option>
+					<select class="custom-select" id="classification">
+						<option></option>
 						<?php 
-							if (mysql_num_rows($class) > 0) {
+							if (mysqli_num_rows($class) > 0) {
 
-							while($row = mysql_fetch_assoc($class)) {
+							while($row = mysqli_fetch_assoc($class)) {
 						?>
-						<option value= " <?php echo $row['class_code'] ?>"><?php echo $row['class_name'] ?></option>
+						<option value= "<?php echo $row['class_code'] ?>"><?php echo $row['class_name'] ?></option>
 						<?php    
 						    }
 
@@ -65,7 +87,7 @@ $product = mysql_query($sql,$conn);
 				<div class="col-md-2"> 
 				</div>
 				<div class="col-md-2"> 
-					<a href="" class="btn btn-outline-dark" style="width:80px;height:40px;font-size:11px;">
+					<a onclick="javascript:addURL(this);alert(this.href);" href="product_master.php?" class="btn btn-outline-dark" style="width:80px;height:40px;font-size:11px;">
 					検索<br>
 					(Search)</a>
 				</div>
@@ -81,7 +103,7 @@ $product = mysql_query($sql,$conn);
 					<label >商品名 :</label>
 				</div>
 				<div class="col-md-4"> 
-					  <input type="text" class="form-control">
+					  <input type="text" class="form-control item_name" value="">
 				</div>
 			</div>
 		</div>
@@ -98,9 +120,10 @@ $product = mysql_query($sql,$conn);
 				</thead>
 				<tbody id='item'>
 				<?php 
-					if (mysql_num_rows($product) > 0) {
+					if (mysqli_num_rows($product) > 0) {
 
-					while($row = mysql_fetch_assoc($product)) {			
+					while($row = mysqli_fetch_assoc($product)) {
+
 				?>
 				<tr>
 					<th scope="row"><?php echo $row['item_code'] ?></th>
@@ -132,6 +155,14 @@ $product = mysql_query($sql,$conn);
 </body>
 </html>
 <script type="text/javascript">
+	function addURL(element)
+	{
+	    $(element).attr('href', function() {
+	    	var classification = $('#classification').val();
+	   		var item_name = $('.item_name').val();
+	        return this.href+'code='+classification+'&name='+item_name;
+	    });
+	}
  	$("tbody").delegate('.delete','click',function(){
         var del_confirm =  confirm("Are you sure you want to delete?");
 	    if (del_confirm == false){

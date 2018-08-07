@@ -2,7 +2,10 @@
 include("master.php");
 include("confs/auth.php");
 include("master/sql.php");
-session_start();
+if(!isset($_SESSION)) 
+{ 
+    session_start(); 
+} 
 include("confs/config.php");
 ini_set('display_errors', 1);
 $auth = isset($_SESSION['auth']);
@@ -53,7 +56,7 @@ $auth = isset($_SESSION['auth']);
 					(Search)</a>
 				</div>
 				<div class="col-md-2"> 
-					<a href="./sale_product_insert.php" class="btn btn-outline-dark" style="width:80px;height:40px;font-size:11px;">
+					<a href="./sale_insert.php" class="btn btn-outline-dark" style="width:80px;height:40px;font-size:11px;">
 					登録<br>
 					(Insert)</a>
 				</div>
