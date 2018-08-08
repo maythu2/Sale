@@ -9,6 +9,13 @@ $auth = isset($_SESSION['auth']);
 
 $sql = "SELECT * FROM class_master WHERE delete_flag!='1' ";
 $classification = mysql_query($sql,$conn);
+
+if (isset($_GET['name'])) {
+	$name = $_GET['name'];
+	$sql = "SELECT * FROM class_master WHERE class_name LIKE '%$name%' ";
+	$classification = mysql_query($sql,$conn);
+}
+
 ?>
 <html>
 <head>
@@ -45,12 +52,12 @@ $classification = mysql_query($sql,$conn);
 					<label >分類 :</label>
 				</div>
 				<div class="col-md-4"> 
-					<input type="text" class="form-control">
+					<input type="text" class="form-control class_name" value="<?php if (isset($name))echo $name;?>">
 				</div>
 				<div class="col-md-2"> 
 				</div>
 				<div class="col-md-2"> 
-					<a href="" class="btn btn-outline-dark" style="width:80px;height:40px;font-size:11px;">
+					<a onclick="javascript:addURL(this);" href="class_master.php?" class="btn btn-outline-dark" style="width:80px;height:40px;font-size:11px;">
 					検索<br>
 					(Search)</a>
 				</div>
@@ -106,6 +113,13 @@ $classification = mysql_query($sql,$conn);
 </body>
 </html>
 <script type="text/javascript">
+	function addURL(element)
+	{
+	    $(element).attr('href', function() {
+	   		var class_name = $('.class_name').val();
+	        return this.href+'&name='+class_name;
+	    });
+	}
  	$("tbody").delegate('.delete','click',function(){
         var del_confirm =  confirm("Are you sure you want to delete?");
 	    if (del_confirm == false){

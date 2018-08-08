@@ -2,21 +2,17 @@
 include("master.php");
 include("confs/auth.php");
 include("master/sql.php");
-if(!isset($_SESSION)) 
-{ 
-    session_start(); 
-} 
+session_start();
 include("confs/config.php");
 ini_set('display_errors', 1);
 $auth = isset($_SESSION['auth']);
 $sql = "SELECT * FROM customer_master";
-$customer = mysqli_query($conn,$sql);
+$customer = mysql_query($sql,$conn);
 
 $sql = "SELECT p.item_code,p.item_name,p.sales_price,c.class_name 
 		FROM product_master p 
 		LEFT JOIN class_master c ON c.class_code=p.class_code";
-$product = mysqli_query($conn,$sql);
-
+$product = mysql_query($sql,$conn);
 ?>
 <html>
 <head>
@@ -37,6 +33,11 @@ $product = mysqli_query($conn,$sql);
 	}
 	.price,.amount,.total_qty,.total_amount{
 		width: 107px;
+		border-color: white;
+    	border-style: none;
+	}
+	.item_code{
+		width: 80px;
 		border-color: white;
     	border-style: none;
 	}
@@ -64,11 +65,11 @@ $product = mysqli_query($conn,$sql);
 					<select class="custom-select customer_name">
 						<option>-</option>
 						<?php 
-							if (mysqli_num_rows($customer) > 0) {
+							if (mysql_num_rows($customer) > 0) {
 
-							while($row = mysqli_fetch_assoc($customer)) {
+							while($row = mysql_fetch_assoc($customer)) {
 						?>
-						<option value= " <?php echo $row['customer_id'] ?>"><?php echo $row['customer_name'] ?></option>
+						<option value= "<?php echo $row['customer_id'] ?>"><?php echo $row['customer_name'] ?></option>
 						<?php    
 						    }
 
@@ -93,8 +94,17 @@ $product = mysqli_query($conn,$sql);
 				<div class="col-md-2"> 
 					<label >売上日 :</label>
 				</div>
-				<div class="col-md-4"> 
-					  <input type="text" class="form-control date" id="date">
+				<div class="col-md-4">
+					 <input type="text" class="form-control date" id="date">
+				</div>
+				<div class="col-md-2"> 
+				</div>
+				<div class="col-md-2"> 
+				</div>
+				<div class="col-md-2"> 
+					<a href="sale_list.php" class="btn btn-outline-dark" style="width:80px;height:40px;font-size:11px;">
+					後ろ<br>
+					(Back)</a>
 				</div>
 			</div>
 			</br>
@@ -102,8 +112,8 @@ $product = mysqli_query($conn,$sql);
 				<div class="col-md-2"> 
 					<label >備考 :</label>
 				</div>
-				<div class="col-md-4"> 
-					  <input type="text" class="form-control comment">
+				<div class="col-md-4">
+					<textarea type="text" class="form-control comment"></textarea>  
 				</div>
 			</div>
 		</div>
@@ -120,40 +130,40 @@ $product = mysqli_query($conn,$sql);
 				</tr>
 				</thead>
 				<tbody>
-				<?php 
-					if (mysqli_num_rows($product) > 0) {
+					<?php 
+						if (mysql_num_rows($product) > 0) {
 
-					while($row = mysqli_fetch_assoc($product)) {
-				?>	
-				<tr>
-				  	<th scope="row"><?php echo $row['item_code'] ?></th>
-				  	<td><?php echo $row['item_name'] ?></td>
-				  	
-				  	<td><?php echo $row['class_name'] ?></td>
-				  	
-				  	<td><input type="text" class="price" value="<?php echo $row['sales_price'] ?>"></td>
-				  	<td>
-					  	<select class="qty">
-					  	<option value="0">0</option>
-					  	<?php for ($i=1; $i <= 10 ; $i++) { ?>
-					  	<option value="<?php echo $i ?>"><?php echo $i ?></option>
-					  	<?php } ?>
-					  	</select>
-				  	</td>
-				  	<td><input type="text" class="amount" value="0"></td>
-				</tr>
-				<?php    
-				    }
+						while($row = mysql_fetch_assoc($product)) {
+					?>	
+					<tr class="products">
+					  	<th scope="row"><input type="text" class="item_code"value="<?php echo $row['item_code'] ?>"></th>
+					  	<td><?php echo $row['item_name'] ?></td>
+					  	
+					  	<td><?php echo $row['class_name'] ?></td>
+					  	
+					  	<td><input type="text" class="price" value="<?php echo $row['sales_price'] ?>"></td>
+					  	<td>
+						  	<select class="qty">
+						  	<option value="0">0</option>
+						  	<?php for ($i=1; $i <= 10 ; $i++) { ?>
+						  	<option value="<?php echo $i ?>"><?php echo $i ?></option>
+						  	<?php } ?>
+						  	</select>
+					  	</td>
+					  	<td><input type="text" class="amount" value="0"></td>
+					</tr>
+					<?php    
+					    }
 
-					} else {
-					    echo "0 results";
-					}
-				?>
-				<tr>
-					<td colspan="4" style="text-align:center;"> TOTAL</td>
-					<td colspan="1"><input type="text" class="total_qty" value="0"></td>
-					<td colspan="1"><input type="text" class="total_amount" value="0"></td>
-				</tr>
+						} else {
+						    echo "0 results";
+						}
+					?>
+					<tr>
+						<td colspan="4" style="text-align:center;"> TOTAL</td>
+						<td colspan="1"><input type="text" class="total_qty" value="0"></td>
+						<td colspan="1"><input type="text" class="total_amount" value="0"></td>
+					</tr>
 				</tbody>
 			</table>
 	  	</div>
@@ -163,7 +173,7 @@ $product = mysqli_query($conn,$sql);
 </html>
 <script type="text/javascript">
 $(function() {
-    $( "#date" ).datepicker();
+    $( "#date" ).datepicker({ dateFormat: 'yy-mm-dd' });
 });
 $('tbody').delegate('.qty','change',function(){
             var x=$(this).parent().parent();
@@ -189,11 +199,21 @@ function qty(){
     $('.total_qty').val(sum);      
 }
 $( ".insert" ).click(function() {
-	alert("ddd")
+	var products = [];
+	$('.products').each(function(){
+            arr={
+                item_code: $(this).find('.item_code').val(),
+                qty: $(this).find('.qty').val(),
+                price: $(this).find('.price').val(),
+            };
+            products.push(arr);
+    });
+    console.log(products);
 	var comment = $('.comment').val();
 	var customer_id = $('.customer_name').val();
 	var date = $('.date').val();
 	var total_amount = $('.total_amount').val();
+
     $.ajax({
         type:'post',
         url:'sale_in.php',
@@ -203,11 +223,13 @@ $( ".insert" ).click(function() {
             customer_id:customer_id,
             date:date,
             total_amount:total_amount,
+            products : products,
         },
         success:function(result){
+        	console.log(result);
            if (result==1) {
            	alert("successfully save");
-           	// window.location.href = "customer_master.php";
+           	window.location.href = "sale_list.php";
            };
             
         }

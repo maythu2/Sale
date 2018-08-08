@@ -9,9 +9,9 @@ $password = $_POST['password'];
 
 $sql = "SELECT * FROM db_user WHERE user_id = '$user_id' and pw = '$password'";
 
-$result = mysqli_query($conn,$sql);
+$result = mysql_query($sql,$conn);
 
-$row = mysqli_fetch_assoc($result);
+$row = mysql_fetch_assoc($result);
 
 if(isset($row['user_id'])) {
 	if ($row['admin'] == 1) {

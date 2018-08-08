@@ -2,32 +2,29 @@
 include("confs/auth.php");
 include("master.php");
 include("master/sql.php");
-if(!isset($_SESSION)) 
-{ 
-    session_start(); 
-} 
+session_start();
 include("confs/config.php");
 ini_set('display_errors', 1);
 $auth = isset($_SESSION['auth']);
 
 $sql = "SELECT * FROM product_master WHERE delete_flag!='1' ";
-$product = mysqli_query($conn,$sql);
+$product = mysql_query($sql,$conn);
 
 if (isset($_GET['code'])) {
 	$code = $_GET['code'];
 	$sql = "SELECT * FROM product_master WHERE class_code LIKE '%$code%' ";
-	$product = mysqli_query($conn,$sql);
+	$product = mysql_query($sql,$conn);
 }
 if (isset($_GET['name'])) {
 	$name = $_GET['name'];
 	$sql = "SELECT *FROM product_master WHERE item_name LIKE '%$name%' ";
-	$product = mysqli_query($conn,$sql);
+	$product = mysql_query($sql,$conn);
 }
 if (isset($_GET['name']) && isset($_GET['code'])) {
 	$name = $_GET['name'];
 	$code = $_GET['code'];
 	$sql = "SELECT *FROM product_master WHERE item_name LIKE '%$name%' AND class_code LIKE '%$code%' ";
-	$product = mysqli_query($conn,$sql);
+	$product = mysql_query($sql,$conn);
  	
 }
 
@@ -68,13 +65,13 @@ if (isset($_GET['name']) && isset($_GET['code'])) {
 				</div>
 				<div class="col-md-4"> 
 					<select class="custom-select" id="classification">
-						<option></option>
+						<option> </option>
 						<?php 
-							if (mysqli_num_rows($class) > 0) {
+							if (mysql_num_rows($class) > 0) {
 
-							while($row = mysqli_fetch_assoc($class)) {
+							while($row = mysql_fetch_assoc($class)) {
 						?>
-						<option value= "<?php echo $row['class_code'] ?>"><?php echo $row['class_name'] ?></option>
+						<option value= "<?php echo $row['class_code'] ?>" <?php if($code==$row['class_code']): ?> selected="selected"<?php endif; ?>><?php echo $row['class_name'] ?></option>
 						<?php    
 						    }
 
@@ -87,7 +84,7 @@ if (isset($_GET['name']) && isset($_GET['code'])) {
 				<div class="col-md-2"> 
 				</div>
 				<div class="col-md-2"> 
-					<a onclick="javascript:addURL(this);alert(this.href);" href="product_master.php?" class="btn btn-outline-dark" style="width:80px;height:40px;font-size:11px;">
+					<a onclick="javascript:addURL(this);" href="product_master.php?" class="btn btn-outline-dark" style="width:80px;height:40px;font-size:11px;">
 					検索<br>
 					(Search)</a>
 				</div>
@@ -103,7 +100,7 @@ if (isset($_GET['name']) && isset($_GET['code'])) {
 					<label >商品名 :</label>
 				</div>
 				<div class="col-md-4"> 
-					  <input type="text" class="form-control item_name" value="">
+					  <input type="text" class="form-control item_name" value="<?php if (isset($name))echo $name;?>">
 				</div>
 			</div>
 		</div>
@@ -120,10 +117,9 @@ if (isset($_GET['name']) && isset($_GET['code'])) {
 				</thead>
 				<tbody id='item'>
 				<?php 
-					if (mysqli_num_rows($product) > 0) {
+					if (mysql_num_rows($product) > 0) {
 
-					while($row = mysqli_fetch_assoc($product)) {
-
+					while($row = mysql_fetch_assoc($product)) {			
 				?>
 				<tr>
 					<th scope="row"><?php echo $row['item_code'] ?></th>

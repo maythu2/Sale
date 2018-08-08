@@ -10,6 +10,24 @@ $auth = isset($_SESSION['auth']);
 
 $sql = "SELECT * FROM customer_master WHERE delete_flag!='1' ";
 $customer = mysql_query($sql,$conn);
+
+if (isset($_GET['name'])) {
+	$name = $_GET['name'];
+	$sql = "SELECT * FROM customer_master WHERE customer_name LIKE '%$name%' ";
+	$customer = mysql_query($sql,$conn);
+}
+if (isset($_GET['tel'])) {
+	$tel = $_GET['tel'];
+	$sql = "SELECT *FROM customer_master WHERE tel LIKE '%$tel%' ";
+	$customer = mysql_query($sql,$conn);
+}
+if (isset($_GET['name']) && isset($_GET['tel'])) {
+	$name = $_GET['name'];
+	$tel = $_GET['tel'];
+	$sql = "SELECT *FROM customer_master WHERE customer_name LIKE '%$name%' AND tel LIKE '%$tel%' ";
+	$customer = mysql_query($sql,$conn);
+}
+
 ?>
 <html>
 <head>
@@ -46,12 +64,12 @@ $customer = mysql_query($sql,$conn);
 					<label >顧客名 :</label>
 				</div>
 				<div class="col-md-4"> 
-					 <input type="text" class="form-control">
+					 <input type="text" class="form-control customer_name" value="<?php if (isset($name))echo $name;?>">
 				</div>
 				<div class="col-md-2"> 
 				</div>
 				<div class="col-md-2"> 
-					<a href="" class="btn btn-outline-dark" style="width:80px;height:40px;font-size:11px;">
+					<a onclick="javascript:addURL(this);" href="customer_master.php?" class="btn btn-outline-dark" style="width:80px;height:40px;font-size:11px;">
 					検索<br>
 					(Search)</a>
 				</div>
@@ -67,7 +85,7 @@ $customer = mysql_query($sql,$conn);
 					<label >Tel :</label>
 				</div>
 				<div class="col-md-4"> 
-					  <input type="text" class="form-control">
+					 <input type="text" class="form-control tel" value="<?php if (isset($tel))echo $tel;?>">
 				</div>
 			</div>
 		</div>
@@ -120,6 +138,14 @@ $customer = mysql_query($sql,$conn);
 </body>
 </html>
 <script type="text/javascript">
+	function addURL(element)
+	{
+	    $(element).attr('href', function() {
+	    	var customer_name = $('.customer_name').val();
+	   		var tel = $('.tel').val();
+	        return this.href+'name='+customer_name+'&tel='+tel;
+	    });
+	}
  	$("tbody").delegate('.delete','click',function(){
         var del_confirm =  confirm("Are you sure you want to delete?");
 	    if (del_confirm == false){
