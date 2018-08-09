@@ -2,7 +2,10 @@
 include("confs/auth.php");
 include("master.php");
 include("master/sql.php");
-session_start();
+if(!isset($_SESSION)) 
+{ 
+    session_start(); 
+}
 ini_set('display_errors', 1);
 $auth = isset($_SESSION['auth']);
 ?>
@@ -59,7 +62,7 @@ $auth = isset($_SESSION['auth']);
 					<label >TEL :</label>
 				</div>
 				<div class="col-md-4"> 
-					<input type="text" class="form-control tel" name="tel" >
+					<input type="text" class="form-control tel" id="tel" name="tel" > 
 				</div>
 				<div class="col-md-2"> 
 				</div>
@@ -87,10 +90,18 @@ $auth = isset($_SESSION['auth']);
 </body>
 </html>
 <script type="text/javascript">
+	$(window).load(function(){
+	   var phones = [{ "mask": "0#-###-####"}, { "mask": "0#-###-####"}];
+	    $('#tel').inputmask({ 
+	        mask: phones, 
+	        greedy: false, 
+	        definitions: { '#': { validator: "[0-9]", cardinality: 1}} });
+	});
 	$( ".insert" ).click(function() {
 		var address = $('.address').val();
 		var customer_name = $('.customer_name').val();
 		var tel = $('.tel').val();
+		if (true) {};
         $.ajax({
             type:'post',
             url:'customer_in.php',
@@ -103,7 +114,7 @@ $auth = isset($_SESSION['auth']);
             success:function(result){
                if (result==1) {
                	alert("successfully save");
-               	window.location.href = "customer_master.php";
+               	// window.location.href = "customer_master.php";
                };
                 
             }

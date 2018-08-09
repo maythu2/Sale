@@ -1,30 +1,39 @@
 <?php
+
 include("confs/auth.php");
+if(!isset($_SESSION)) 
+{ 
+    session_start(); 
+}
+if ($_SESSION['middle']==1) {
+	
+
 include("master.php");
 include("master/sql.php");
-session_start();
+
+
 include("confs/config.php");
 ini_set('display_errors', 1);
 $auth = isset($_SESSION['auth']);
 
 $sql = "SELECT * FROM product_master WHERE delete_flag!='1' ";
-$product = mysql_query($sql,$conn);
+$product = mysqli_query($conn,$sql);
 
 if (isset($_GET['code'])) {
 	$code = $_GET['code'];
 	$sql = "SELECT * FROM product_master WHERE class_code LIKE '%$code%' ";
-	$product = mysql_query($sql,$conn);
+	$product = mysqli_query($conn,$sql);
 }
 if (isset($_GET['name'])) {
 	$name = $_GET['name'];
 	$sql = "SELECT *FROM product_master WHERE item_name LIKE '%$name%' ";
-	$product = mysql_query($sql,$conn);
+	$product = mysqli_query($conn,$sql);
 }
 if (isset($_GET['name']) && isset($_GET['code'])) {
 	$name = $_GET['name'];
 	$code = $_GET['code'];
 	$sql = "SELECT *FROM product_master WHERE item_name LIKE '%$name%' AND class_code LIKE '%$code%' ";
-	$product = mysql_query($sql,$conn);
+	$product = mysqli_query($conn,$sql);
  	
 }
 
@@ -51,7 +60,7 @@ if (isset($_GET['name']) && isset($_GET['code'])) {
 		<div class="card-header">
 			<div class="row">
 				<div class="col-md-10">
-					<h6>User : <?php echo $user['username'] ?>[<?php  echo $user['group_name'] ?>]</h6>
+					<h6>User : <?php echo $user['username'] ?>[<?php echo $user['group_name'] ?>]</h6>
 				</div>
 				<div class="col-md-2">
 					<a href="auth/logout.php"> (Logout)</a>
@@ -67,9 +76,9 @@ if (isset($_GET['name']) && isset($_GET['code'])) {
 					<select class="custom-select" id="classification">
 						<option> </option>
 						<?php 
-							if (mysql_num_rows($class) > 0) {
+							if (mysqli_num_rows($class) > 0) {
 
-							while($row = mysql_fetch_assoc($class)) {
+							while($row = mysqli_fetch_assoc($class)) {
 						?>
 						<option value= "<?php echo $row['class_code'] ?>" <?php if($code==$row['class_code']): ?> selected="selected"<?php endif; ?>><?php echo $row['class_name'] ?></option>
 						<?php    
@@ -117,9 +126,9 @@ if (isset($_GET['name']) && isset($_GET['code'])) {
 				</thead>
 				<tbody id='item'>
 				<?php 
-					if (mysql_num_rows($product) > 0) {
+					if (mysqli_num_rows($product) > 0) {
 
-					while($row = mysql_fetch_assoc($product)) {			
+					while($row = mysqli_fetch_assoc($product)) {			
 				?>
 				<tr>
 					<th scope="row"><?php echo $row['item_code'] ?></th>
@@ -181,3 +190,7 @@ if (isset($_GET['name']) && isset($_GET['code'])) {
         })
 	})
 </script>
+<?php }else{
+	header('location: auth/logout.php');
+} 
+?>

@@ -2,7 +2,11 @@
 include("confs/auth.php");
 include("master.php");
 include("master/sql.php");
-session_start();
+if(!isset($_SESSION)) 
+{ 
+    session_start(); 
+} 
+
 ini_set('display_errors', 1);
 $auth = isset($_SESSION['auth']);
 ?>
@@ -19,6 +23,13 @@ $auth = isset($_SESSION['auth']);
 	}
 	thead{
 		font-size: 13px;
+	}
+	.error {
+		font: normal 10px arial;
+		padding: 3px;
+		margin: 3px;
+		background-color: #ffc;
+		border: 1px solid #c00;
 	}
 	</style>
 </head>
@@ -41,7 +52,7 @@ $auth = isset($_SESSION['auth']);
 					<label >商品名 :</label>
 				</div>
 				<div class="col-md-4"> 
-					  <input type="text" class="form-control item_name" name="item_name" value="">
+					  <input type="text" class="form-control item_name required" name="item_name" value="">
 				</div>
 				<div class="col-md-2"> 
 				</div>
@@ -62,9 +73,9 @@ $auth = isset($_SESSION['auth']);
 					<select class="custom-select classification_name">
 						<option>-</option>
 						<?php 
-							if (mysql_num_rows($class) > 0) {
+							if (mysqli_num_rows($class) > 0) {
 
-							while($row = mysql_fetch_assoc($class)) {
+							while($row = mysqli_fetch_assoc($class)) {
 						?>
 						<option value= " <?php echo $row['class_code'] ?>"><?php echo $row['class_name'] ?></option>
 						<?php    
@@ -77,7 +88,7 @@ $auth = isset($_SESSION['auth']);
 					</select>
 				</div>
 			</div>
-		</br>
+			</br>
 			<div class="row">
 				<div class="col-md-2"> 
 					<label >価格 :</label>
@@ -87,7 +98,6 @@ $auth = isset($_SESSION['auth']);
 				</div>
 			</div>
 		</div>
-		
 	</div>
 </div>
 </body>
@@ -107,6 +117,7 @@ $auth = isset($_SESSION['auth']);
                 class_name:classification_name,
             },
             success:function(result){
+            	console.log(result);
                if (result==1) {
                	alert("successfully save");
                	window.location.href = "product_master.php";

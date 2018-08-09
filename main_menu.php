@@ -2,7 +2,10 @@
 include("confs/auth.php");
 include("master.php");
 include("master/sql.php");
-session_start();
+if(!isset($_SESSION)) 
+{ 
+    session_start(); 
+} 
 $auth = isset($_SESSION['auth']);
 ?>
 <html>

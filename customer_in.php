@@ -1,6 +1,9 @@
 <?php
 include("confs/auth.php");
-session_start();
+if(!isset($_SESSION)) 
+{ 
+    session_start(); 
+}
 include("confs/config.php");
 ini_set('display_errors', 1);
 // for insert customer
@@ -20,20 +23,19 @@ if(isset($_REQUEST))
 			  SET  customer_name='$customer_name', address='$address',tel='$tel' 
 			  WHERE customer_id= '$customer_id' ";
 
-		$result=mysql_query($sql);
+		$result=mysqli_query($conn,$sql);
 		echo $result;
 	}else{
 		$customer_name=$_POST['customer_name'];
 
 		$address=$_POST['address'];
 
-		$tel=$_POST['tel'];
+		$tel=str_replace("-","",$_POST['tel']);
 
 		$sql="INSERT INTO  customer_master(customer_name,address,tel,delete_flag) 
 			VALUES ('$customer_name','$address','$tel','0') ";
 
-		$result=mysql_query($sql);
-
+		$result=mysqli_query($conn,$sql);
 		echo $result;
 	}
 }
@@ -45,7 +47,7 @@ if (isset($_POST['del_id'])) {
 			SET delete_flag='1'
 			WHERE customer_id = $del_id";
 
-	$result = mysql_query($sql);
+	$result = mysqli_query($conn,$sql);
 
 	echo $result;
 }

@@ -2,17 +2,20 @@
 include("master.php");
 include("confs/auth.php");
 include("master/sql.php");
-session_start();
+if(!isset($_SESSION)) 
+{ 
+    session_start(); 
+}
 include("confs/config.php");
 ini_set('display_errors', 1);
 $auth = isset($_SESSION['auth']);
 $sql = "SELECT * FROM customer_master";
-$customer = mysql_query($sql,$conn);
+$customer = mysqli_query($conn,$sql);
 
 $sql = "SELECT p.item_code,p.item_name,p.sales_price,c.class_name 
 		FROM product_master p 
 		LEFT JOIN class_master c ON c.class_code=p.class_code";
-$product = mysql_query($sql,$conn);
+$product = mysqli_query($conn,$sql);
 ?>
 <html>
 <head>
@@ -65,9 +68,9 @@ $product = mysql_query($sql,$conn);
 					<select class="custom-select customer_name">
 						<option>-</option>
 						<?php 
-							if (mysql_num_rows($customer) > 0) {
+							if (mysqli_num_rows($customer) > 0) {
 
-							while($row = mysql_fetch_assoc($customer)) {
+							while($row = mysqli_fetch_assoc($customer)) {
 						?>
 						<option value= "<?php echo $row['customer_id'] ?>"><?php echo $row['customer_name'] ?></option>
 						<?php    
@@ -131,9 +134,9 @@ $product = mysql_query($sql,$conn);
 				</thead>
 				<tbody>
 					<?php 
-						if (mysql_num_rows($product) > 0) {
+						if (mysqli_num_rows($product) > 0) {
 
-						while($row = mysql_fetch_assoc($product)) {
+						while($row = mysqli_fetch_assoc($product)) {
 					?>	
 					<tr class="products">
 					  	<th scope="row"><input type="text" class="item_code"value="<?php echo $row['item_code'] ?>"></th>

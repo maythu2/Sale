@@ -1,6 +1,9 @@
 <?php
 include("confs/auth.php");
-session_start();
+if(!isset($_SESSION)) 
+{ 
+    session_start(); 
+} 
 include("confs/config.php");
 ini_set('display_errors', 1);
 
@@ -21,7 +24,7 @@ if(isset($_REQUEST))
 			  SET  class_code= '$class_code',item_name='$item_name', sales_price='$sale_price' 
 			  WHERE item_code= '$item_code' ";
 
-		$result=mysql_query($sql);
+		$result=mysqli_query($conn,$sql);
 		echo $result;
 	}else{
 		$sale_price=$_POST['sale_price'];
@@ -33,7 +36,7 @@ if(isset($_REQUEST))
 		$sql="INSERT INTO  product_master(class_code,item_name, sales_price,delete_flag) 
 			VALUES ('$class_code','$item_name','$sale_price','0') ";
 
-		$result=mysql_query($sql);
+		$result=mysqli_query($conn,$sql);
 		echo $result;
 	}
 }
@@ -45,7 +48,7 @@ if (isset($_POST['del_id'])) {
 			SET delete_flag='1'
 			WHERE item_code = $del_id";
 
-	$result = mysql_query($sql);
+	$result = mysqli_query($conn,$sql);
 
 	echo $result;
 }

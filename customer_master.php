@@ -3,29 +3,32 @@ include("master.php");
 include("confs/auth.php");
 include("master.php");
 include("master/sql.php");
-session_start();
+if(!isset($_SESSION)) 
+{ 
+    session_start(); 
+}
 include("confs/config.php");
 ini_set('display_errors', 1);
 $auth = isset($_SESSION['auth']);
 
 $sql = "SELECT * FROM customer_master WHERE delete_flag!='1' ";
-$customer = mysql_query($sql,$conn);
+$customer = mysqli_query($conn,$sql);
 
 if (isset($_GET['name'])) {
 	$name = $_GET['name'];
 	$sql = "SELECT * FROM customer_master WHERE customer_name LIKE '%$name%' ";
-	$customer = mysql_query($sql,$conn);
+	$customer = mysqli_query($conn,$sql);
 }
 if (isset($_GET['tel'])) {
 	$tel = $_GET['tel'];
 	$sql = "SELECT *FROM customer_master WHERE tel LIKE '%$tel%' ";
-	$customer = mysql_query($sql,$conn);
+	$customer = mysqli_query($conn,$sql);
 }
 if (isset($_GET['name']) && isset($_GET['tel'])) {
 	$name = $_GET['name'];
 	$tel = $_GET['tel'];
 	$sql = "SELECT *FROM customer_master WHERE customer_name LIKE '%$name%' AND tel LIKE '%$tel%' ";
-	$customer = mysql_query($sql,$conn);
+	$customer = mysqli_query($conn,$sql);
 }
 
 ?>
@@ -43,6 +46,7 @@ if (isset($_GET['name']) && isset($_GET['tel'])) {
 	thead{
 		font-size: 14px;
 	}
+
 	</style>
 </head>
 <body>
@@ -103,14 +107,14 @@ if (isset($_GET['name']) && isset($_GET['tel'])) {
 				</thead>
 				<tbody>
 				<?php 
-					if (mysql_num_rows($customer) > 0) {
+					if (mysqli_num_rows($customer) > 0) {
 
-					while($row = mysql_fetch_assoc($customer)) {			
+					while($row = mysqli_fetch_assoc($customer)) {			
 				?>
 				<tr>
 				  <th scope="row"><?php echo $row['customer_id'] ?></th>
 				  <td><?php echo $row['customer_name'] ?></td>
-				  <td><?php echo $row['tel'] ?></td>
+				  <td style="width: 125px;"><?php echo '0'.substr($row['tel'], 0, 1).'-'.substr($row['tel'], 1, 3).'-'.substr($row['tel'],4,6); ?></td>
 				  <td><?php echo $row['address'] ?></td>
 				  <td>
 						<button class="delete" item ="<?php echo $row['customer_id'] ?>" style="font-color:blue">

@@ -2,27 +2,29 @@
 include("master.php");
 include("confs/auth.php");
 include("master/sql.php");
-session_start();
-include("confs/config.php");
+if(!isset($_SESSION)) 
+{ 
+    session_start(); 
+}include("confs/config.php");
 ini_set('display_errors', 1);
 $auth = isset($_SESSION['auth']);
 $sql= "SELECT s.sales_number,s.customer_id,s.total_amount,s.sales_date,c.customer_name 
 	   FROM sales_list s
 	   LEFT JOIN customer_master c ON c.customer_id=s.customer_id";
-$sales = mysql_query($sql);
+$sales = mysqli_query($conn,$sql);
 
-$name=$_GET["name"];
-$start_date= $_GET["start_date"];
-$end_date=$_GET["end_date"];
-if (isset($name)) {
+// $name=$_GET["name"];
+// $start_date= $_GET["start_date"];
+// $end_date=$_GET["end_date"];
+if (isset($_GET["name"])) {
 	$sql="SELECT s.sales_number,s.customer_id,s.total_amount,s.sales_date,c.customer_name 
 	  FROM sales_list s
 	  LEFT JOIN customer_master c ON c.customer_id=s.customer_id
 	  WHERE c.customer_name LIKE '%$name%'";
-	$sales = mysql_query($sql);
+	$sales = mysqli_query($conn,$sql);
 }
 
-if(isset($start_date)) {
+if(isset($_GET["start_date"])) {
 	if ($end_date=="") {
 		$end_date = date("Y-m-d");
 	}
@@ -30,21 +32,21 @@ if(isset($start_date)) {
 	  FROM sales_list s
 	  LEFT JOIN customer_master c ON c.customer_id=s.customer_id
 	  WHERE s.sales_date BETWEEN '$start_date%' AND '$end_date%'";
-	$sales = mysql_query($sql);
+	$sales = mysqli_query($conn,$sql);
 }
-if (isset($start_date) && isset($end_date)) {
+if (isset($_GET["start_date"]) && isset($_GET["end_date"])) {
 	$sql="SELECT s.sales_number,s.customer_id,s.total_amount,s.sales_date,c.customer_name 
   	FROM sales_list s
   	LEFT JOIN customer_master c ON c.customer_id=s.customer_id
   	WHERE s.sales_date BETWEEN '$start_date%' AND '$end_date%'";
-	$sales = mysql_query($sql);
+	$sales = mysqli_query($conn,$sql);
 }
 if (isset($start_date) && isset($end_date) && isset($name)) {
 	$sql="SELECT s.sales_number,s.customer_id,s.total_amount,s.sales_date,c.customer_name 
   	FROM sales_list s
   	LEFT JOIN customer_master c ON c.customer_id=s.customer_id
   	WHERE c.customer_name LIKE '%$name%' AND s.sales_date BETWEEN '$start_date%' AND '$end_date%'";
-	$sales = mysql_query($sql);
+	$sales = mysqli_query($conn,$sql);
 }
 
 ?>
@@ -126,9 +128,9 @@ if (isset($start_date) && isset($end_date) && isset($name)) {
 				</thead>
 				<tbody>
 				<?php 
-				if (mysql_num_rows($sales) > 0) {
+				if (mysqli_num_rows($sales) > 0) {
 
-				while($row = mysql_fetch_assoc($sales)) {
+				while($row = mysqli_fetch_assoc($sales)) {
 						
 				?>
 				<tr>

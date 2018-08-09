@@ -1,16 +1,16 @@
 <?php
 $dbhost = "localhost";
 $dbuser = "root";
-$dbpass = "root";
+$dbpass = "";
 $dbname = "bbs";
 
-$conn = mysql_connect($dbhost, $dbuser, $dbpass) or die("unable to connect to database.");
+$conn = mysqli_connect($dbhost, $dbuser, $dbpass) or die("unable to connect to database.");
 
 if (!$conn) {
 
 die("Connection failed: " . mysqli_connect_error());
 
 }
-mysql_select_db($dbname) or die ("Unable to select");
+mysqli_select_db($conn,$dbname) or die ("Unable to select");
 
 ?>
